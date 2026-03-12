@@ -7,3 +7,28 @@ const data = [
   { id: "p06", title: "Ruta", desc: "Camino en perspectiva", src: "https://picsum.photos/id/1005/1200/675" }
 ];
 
+// selecion de elementos de DOM
+const thumbs = document.querySelector("#thumbs");
+const heroImg = document.querySelector("#heroImg");
+const heroTitle = document.querySelector("#heroTitle");
+const heroDesc = document.querySelector("#heroDesc");
+const likeBtn = document.querySelector("#likeBtn");
+const counter = document.querySelector("#counter");
+
+// variables para el estado de la aplicacion
+let currentIndex = 0;
+let likes = {};
+
+// funcion para renderizar las miniaturas
+function renderTumbs() {
+  thumbs.innerHTML = data.map((item, index) => {
+    return`
+    <article class="thumb ${index} === currentIndex ? "active" : ""}" data-index="${index}">
+    <span class="badge">${index + 1}</span>
+    <img src="${item.src}" alt="${item.title}" />
+    </article>
+    `;
+  }).join("");
+}
+
+renderTumbs();
