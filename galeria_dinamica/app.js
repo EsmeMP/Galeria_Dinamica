@@ -1,9 +1,9 @@
 const data = [
-  { id: "p01", title: "Aurora", desc: "Luz suave y cielo polar", src: "https://picsum.photos/id/1018/1200/675" },
-  { id: "p02", title: "Montaña", desc: "Rocas y niebla", src: "https://picsum.photos/id/1015/1200/675" },
-  { id: "p03", title: "Ciudad", desc: "Atardecer urbano", src: "https://picsum.photos/id/1011/1200/675" },
-  { id: "p04", title: "Bosque", desc: "Verde profundo", src: "https://picsum.photos/id/1020/1200/675" },
-  { id: "p05", title: "Mar", desc: "Horizonte y calma", src: "https://picsum.photos/id/1016/1200/675" },
+  { id: "p01", title: "Montaña", desc: "Luz suave y cielo polar", src: "../img/honguito_solar.png" },
+  { id: "p02", title: "Amanecer", desc: "Rocas y niebla", src: "../img/girasol-removebg-preview.png" },
+  { id: "p03", title: "Rio", desc: "Atardecer urbano", src: "../img/lanzaguizantes.png" },
+  { id: "p04", title: "Alaska", desc: "Verde profundo", src: "../img/lector.png" },
+  { id: "p05", title: "Desierto", desc: "Horizonte y calma", src: "https://picsum.photos/id/1016/1200/675" },
   { id: "p06", title: "Ruta", desc: "Camino en perspectiva", src: "https://picsum.photos/id/1005/1200/675" }
 ];
 
@@ -30,5 +30,48 @@ function renderTumbs() {
     `;
   }).join("");
 }
+
+// renderizar inmagen en el visor principal
+function renderHero ( index ){
+  // recuperar el elemento acorde al indice
+  const item = data[index];
+
+  // actualizar la imagen principal
+  heroImg.src = item.src;
+  heroImg.alt = item.title;
+
+  // actualizar titulo y descripcion
+  heroTitle.textContent = item.title;
+  heroDesc.textContent = item.desc;
+
+  // actualizar el contador
+  counter.textContent = `${index + 1} / ${data.length}`;
+
+  // evento para manejar el clic en el boton de me gusta
+  likeBtn.addEventListener("click", () => {
+    const currentItem = data[currentIndex];
+    // cambiar de true a false
+    likes[currentItem.id] = !likes[currentItem.id];
+    const isLiked = likes[currentItem.id];
+
+    // actualizar  el boton visualmente
+    likeBtn.textContent = isLiked ? "💙" : "❤️";
+    likeBtn.classList.toggle("on", isLiked);
+    likeBtn.setAttribute("aria-pressed", isLiked);
+  });
+}
+
+// evento para manejar el click en las miniaturas
+thumbs.addEventListener("click", (e) => {
+  const thumb = e.target.closest(".thumb");
+  if (!thumb) return;
+
+  // dataset recupera todas las etiquetas tipo data, dataindex
+  // obtener el indice de la miniature desde el atributo de data-index]
+  currentIndex = Number(thumb.dataset.index);
+
+  // actualizar el visor principal
+  renderHero(currentIndex);
+});
 
 renderTumbs();
