@@ -1,10 +1,15 @@
 const data = [
   { id: "p01", title: "Montaña", desc: "Luz suave y cielo polar", src: "../img/honguito_solar.png" },
-  { id: "p02", title: "Amanecer", desc: "Rocas y niebla", src: "../img/girasol-removebg-preview.png" },
-  { id: "p03", title: "Rio", desc: "Atardecer urbano", src: "../img/lanzaguizantes.png" },
-  { id: "p04", title: "Alaska", desc: "Verde profundo", src: "../img/lector.png" },
-  { id: "p05", title: "Desierto", desc: "Horizonte y calma", src: "https://picsum.photos/id/1016/1200/675" },
-  { id: "p06", title: "Ruta", desc: "Camino en perspectiva", src: "https://picsum.photos/id/1005/1200/675" }
+  { id: "p02", title: "Amanecer", desc: "Rocas y niebla", src: "../img/girasol-primitiva.png" },
+  { id: "p03", title: "Rio", desc: "Atardecer urbano", src: "../img/lanzaguizantes-primitivo.png" },
+  { id: "p04", title: "Alaska", desc: "Verde profundo", src: "../img/cascarrabias.png" },
+  { id: "p05", title: "Desierto", desc: "Horizonte y calma", src: "../img/boomerang.png" },
+  { id: "p06", title: "Ruta", desc: "Camino en perspectiva", src: "../img/lanazaguisantes-sombrio.png" },
+  { id: "p07", title: "Ruta", desc: "Camino en perspectiva", src: "../img/lanzaguisantes.png" },
+  { id: "p08", title: "Ruta", desc: "Camino en perspectiva", src: "../img/guacadrilo.png" },
+  { id: "p09", title: "Ruta", desc: "Camino en perspectiva", src: "../img/rabano.png" },
+  { id: "p10", title: "Ruta", desc: "Camino en perspectiva", src: "../img/hongo-sapo.png" },
+  { id: "p11", title: "Ruta", desc: "Camino en perspectiva", src: "../img/seta-sombria.png" },
 ];
 
 // selecion de elementos de DOM
@@ -14,10 +19,17 @@ const heroTitle = document.querySelector("#heroTitle");
 const heroDesc = document.querySelector("#heroDesc");
 const likeBtn = document.querySelector("#likeBtn");
 const counter = document.querySelector("#counter");
+const prevBtn = document.querySelector("#prevBtn");
+const nextBtn = document.querySelector("#nextBtn");
+const playBtn = document.querySelector("#playBtn");
 
 // variables para el estado de la aplicacion
 let currentIndex = 0;
 let likes = {};
+
+let autoPlayId = null;
+let isPlaying = false;
+const AUTO_TIME = 4000;
 
 // funcion para renderizar las miniaturas
 function renderTumbs() {
@@ -44,8 +56,40 @@ function renderHero ( index ){
   heroTitle.textContent = item.title;
   heroDesc.textContent = item.desc;
 
-  // actualizar el contador
+  // actualizar el contador de imagenes
   counter.textContent = `${index + 1} / ${data.length}`;
+
+  // axtualizar el botn de reproduccion
+  function updatePlayButton(){}
+
+  // funcion para cambiar de imagen automaticamente
+  function changeSlide( newIndex ){
+    heroImg.classList.add("fade-out");
+    setTimeout(() => {
+      currentIndex = newIndex;
+      renderHero( currentIndex );
+      heroImg.classList.remove("fade-out");
+    }, 350);
+  }
+
+  function nextSlide(){
+    const newIndex = (currentIndex + 1) % data.length;
+    changeSlide ( newIndex );
+  }
+
+  function prevSlide(){
+    const newIndex = (currentIndex - 1 + data.length) % data.length;
+    changeSlide ( newIndex );
+  }
+
+  function startAutoPlay(){
+    autoPlayId = setInterval ( () => { 
+      nextSlide();
+     },  AUTO_TIME);
+
+     isPlaying = true;
+     updatePlayButton();
+  }
 
   // evento para manejar el clic en el boton de me gusta
   likeBtn.addEventListener("click", () => {
@@ -75,3 +119,4 @@ thumbs.addEventListener("click", (e) => {
 });
 
 renderTumbs();
+renderHero(currentIndex);
