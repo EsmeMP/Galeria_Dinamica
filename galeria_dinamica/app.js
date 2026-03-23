@@ -1,15 +1,15 @@
 const data = [
-  { id: "p01", title: "Montaña", desc: "Luz suave y cielo polar", src: "../img/honguito_solar.png" },
-  { id: "p02", title: "Amanecer", desc: "Rocas y niebla", src: "../img/girasol-primitiva.png" },
-  { id: "p03", title: "Rio", desc: "Atardecer urbano", src: "../img/lanzaguizantes-primitivo.png" },
-  { id: "p04", title: "Alaska", desc: "Verde profundo", src: "../img/cascarrabias.png" },
-  { id: "p05", title: "Desierto", desc: "Horizonte y calma", src: "../img/boomerang.png" },
-  { id: "p06", title: "Ruta", desc: "Camino en perspectiva", src: "../img/lanazaguisantes-sombrio.png" },
-  { id: "p07", title: "Ruta", desc: "Camino en perspectiva", src: "../img/lanzaguisantes.png" },
-  { id: "p08", title: "Ruta", desc: "Camino en perspectiva", src: "../img/guacadrilo.png" },
-  { id: "p09", title: "Ruta", desc: "Camino en perspectiva", src: "../img/rabano.png" },
-  { id: "p10", title: "Ruta", desc: "Camino en perspectiva", src: "../img/hongo-sapo.png" },
-  { id: "p11", title: "Ruta", desc: "Camino en perspectiva", src: "../img/seta-sombria.png" },
+  { id: "p01", title: "Honguito Solar", desc: "Luz suave y cielo polar", src: "../img/honguito_solar.png" },
+  { id: "p02", title: "Girasol Primitivo", desc: "Rocas y niebla", src: "../img/girasol-primitiva.png" },
+  { id: "p03", title: "Lanzaguizantes Primitivo", desc: "Atardecer urbano", src: "../img/lanzaguizantes-primitivo.png" },
+  { id: "p04", title: "Nuez Cascarrabias", desc: "Verde profundo", src: "../img/cascarrabias.png" },
+  { id: "p05", title: "Boomerang", desc: "Horizonte y calma", src: "../img/boomerang.png" },
+  { id: "p06", title: "Lanzaguizantes Sombrio", desc: "Camino en perspectiva", src: "../img/lanazaguisantes-sombrio.png" },
+  { id: "p07", title: "Bipetidora", desc: "Camino en perspectiva", src: "../img/lanzaguisantes.png" },
+  { id: "p08", title: "Guacadrilo", desc: "Camino en perspectiva", src: "../img/guacadrilo.png" },
+  { id: "p09", title: "Rabano", desc: "Camino en perspectiva", src: "../img/rabano.png" },
+  { id: "p10", title: "Hongo", desc: "Camino en perspectiva", src: "../img/hongo-sapo.png" },
+  { id: "p11", title: "Seta Sombria", desc: "Camino en perspectiva", src: "../img/seta-sombria.png" },
 ];
 
 // selecion de elementos de DOM
@@ -57,10 +57,38 @@ function renderHero ( index ){
   heroDesc.textContent = item.desc;
 
   // actualizar el contador de imagenes
-  counter.textContent = `${index + 1} / ${data.length}`;
+  // counter.textContent = `${index + 1} / ${data.length}`;
+  updateCounter();
+  updateActiveThumb();
+  updateLikeBtn();
+}
 
   // axtualizar el botn de reproduccion
-  function updatePlayButton(){}
+  function updatePlayButton(){
+    playBtn.textContent = isPlaying ? "◼" : "▶";
+    playBtn.dataset.state = isPlaying ? "stop" : "play";
+  }
+
+  function updateCounter(){
+    counter.textContent = `${currentIndex + 1} / ${data.length}`;
+  }
+
+  function updateActiveThumb(){
+    // cambia la clase de la miniatura
+    document.querySelectorAll(".thumb").forEach((thumb, i) => {
+      thumb.classList.toggle("active", i === currentIndex);
+    });
+  }
+  
+  function updateLikeBtn(){
+    const currentItem = data[currentIndex];
+    const isLiked = likes[currentItem.id] === true;
+  
+    // actualizar  el boton visualmente
+    likeBtn.textContent = isLiked ? "☆" : "⭐";
+    likeBtn.classList.toggle("on", isLiked);
+    likeBtn.setAttribute("aria-pressed", isLiked);
+  }
 
   // funcion para cambiar de imagen automaticamente
   function changeSlide( newIndex ){
@@ -91,32 +119,60 @@ function renderHero ( index ){
      updatePlayButton();
   }
 
+  function stopAutoPlay(){
+    clearInterval (autoPlayId);
+    autoPlayId = null;
+    isPlaying = false;
+    updatePlayButton();
+  }
+
+  function toggleAutoPlay(){
+    if (isPlaying) {
+      stopAutoPlay();
+    } else {
+      startAutoPlay();
+    }
+  }
+
   // evento para manejar el clic en el boton de me gusta
   likeBtn.addEventListener("click", () => {
     const currentItem = data[currentIndex];
     // cambiar de true a false
     likes[currentItem.id] = !likes[currentItem.id];
-    const isLiked = likes[currentItem.id];
-
-    // actualizar  el boton visualmente
-    likeBtn.textContent = isLiked ? "💙" : "❤️";
-    likeBtn.classList.toggle("on", isLiked);
-    likeBtn.setAttribute("aria-pressed", isLiked);
+    updateLikeBtn();
   });
-}
 
 // evento para manejar el click en las miniaturas
 thumbs.addEventListener("click", (e) => {
   const thumb = e.target.closest(".thumb");
   if (!thumb) return;
 
+  // obtener el indice de la miniatura dede el atributo data-index
+  const newIndex = Number(thumb.dataset.index);
+  if (newIndex === currentIndex) return;
+  changeSlide(newIndex);
   // dataset recupera todas las etiquetas tipo data, dataindex
   // obtener el indice de la miniature desde el atributo de data-index]
-  currentIndex = Number(thumb.dataset.index);
+  // currentIndex = Number(thumb.dataset.index);
 
   // actualizar el visor principal
-  renderHero(currentIndex);
+  // renderHero(currentIndex);
 });
+
+nextBtn.addEventListener("click", nextSlide);
+prevBtn.addEventListener("click", prevSlide);
+playBtn.addEventListener("click", toggleAutoPlay);
+
+// eventos para el teclado
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") {
+    nextSlide();
+  } else if (e.key === "ArrowLeft") {
+    prevSlide();
+  } else if (e.key === " ") {
+    toggleAutoPlay();
+  }
+})
 
 renderTumbs();
 renderHero(currentIndex);
